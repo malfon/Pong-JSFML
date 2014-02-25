@@ -10,6 +10,7 @@ import org.jsfml.window.event.KeyEvent;
 import org.jsfml.system.Clock;
 import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
+import org.jsfml.system.Vector2i;
 
 public class Main
 {
@@ -43,27 +44,28 @@ public class Main
 		p2.setFillColor(Color.WHITE);
 
 		//instantiating ball
+		Ball Pball = new Ball();
+		Vector2f BallPos = new Vector2f(500, 290);
 		CircleShape ball = new CircleShape(10);
+		RectangleShape Box = new RectangleShape();
+		ball.setPosition(BallPos.x, BallPos.y);
+		
+		
+		Box.setSize(new Vector2f(20, 20));
+		Box.setPosition(BallPos.x , BallPos.y);
+		Color BBox = new Color(Color.WHITE, 80);
+		Box.setFillColor(BBox);
+		
+		boolean Col;
 
-		ball.setPosition((width/2)-10, (height/2)-10);
-		float ballx = ball.getPosition().x;
-		float bally = ball.getPosition().y;
-		float ballspeed = 0.5f;
-		boolean left = true;
-		boolean right = false;
-		boolean up = false;
-		boolean down = false;
-		ball.setFillColor(Color.WHITE);
 		
 		//instantiating wall
 		RectangleShape wall = new RectangleShape(new Vector2f(10, 550));
-		
 		wall.setPosition((width/2)-5, 50);
 		wall.setFillColor(new Color(255, 255, 255, 150));
 		
 		//instantiating scoreboard
 		RectangleShape sb = new RectangleShape(new Vector2f(100, 50));
-		
 		sb.setPosition((width/2)-50, 0);
 		sb.setFillColor(new Color(255, 255, 255));
 
@@ -80,6 +82,18 @@ public class Main
 			Time dt = clock.restart();
 			
 			Window.clear();
+			
+			ball.move(1, 0);
+		    Box.setPosition(ball.getPosition().x, ball.getPosition().y);
+			
+		  
+		    Col = Collision(Box, p2);
+			
+			if(Col == true)
+				System.out.println("Collision!");
+			else
+				System.out.println("No Collision");
+			
 			
 			for(Event event : Window.pollEvents())
 			{				
@@ -99,20 +113,21 @@ public class Main
 			}
 
 
+		
 			Window.draw(ball);
 			Window.draw(p1);
 			Window.draw(p2);
 			Window.draw(wall);
 			Window.draw(sb);
+		    Window.draw(Box);
 
 			Window.display();
 		}
 	}
 	
-	
+
 	static void Input(Time dt, Vector2f PaddVel, RectangleShape P2, RectangleShape P1)
 	{
-		
 		
 		if(Keyboard.isKeyPressed(Keyboard.Key.UP))
 			P2.move(0 , -PaddVel.y * dt.asSeconds());
@@ -125,9 +140,33 @@ public class Main
 			P1.move(0, PaddVel.y * dt.asSeconds());
 		
 		if(P2.getPosition().y <= 3)
-			P2.move(0, -PaddVel.y * dt.asSeconds() * 0);
+			PaddVel.equals(0);
 		
 	}
 	
+	
+	static boolean Collision(RectangleShape CBB, RectangleShape P2)
+	{
+		// The bounding box around the ball
+		float BB_buttom = CBB.getPosition().y + CBB.getSize().y;
+		float BB_left = CBB.getPosition().x;
+		float BB_right = CBB.getPosition().x + CBB.getSize().x;
+		float BB_top = CBB.getPosition().y;
+		
+		
+		// The First Player
+		float P2_buttom = P2.getPosition().y + P2.getSize().y;
+		float P2_left = P2.getPosition().x;
+		float P2_right = P2.getPosition().x + P2.getSize().x;
+		float P2_top = P2.getPosition().y;
+		
+		if((BB_right < P2_left) || (BB_left > P2_right) || (BB_top > P2_buttom) || (BB_buttom < P2_top))
+			return false;
+		else
+			return true;
+       
+		
+	}
+
 	
 }
