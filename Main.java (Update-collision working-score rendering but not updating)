@@ -48,7 +48,7 @@ public class Main
 		p2.setFillColor(Color.WHITE);
 
 		//instantiating ball
-		float ballsize=10, ballspeed= 50.0f;
+		float ballsize=10, ballspeed= 8.5f;
 		CircleShape ball = new CircleShape(ballsize);
 		ball.setPosition((width/2)-(ballsize/2), (height/2)-(ballsize/2));
 		ball.setFillColor(Color.WHITE);
