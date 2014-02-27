@@ -8,8 +8,10 @@ import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Text;
 import org.jsfml.graphics.TextStyle;
+import org.jsfml.graphics.Texture;
 import org.jsfml.system.Clock;
 import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
@@ -46,7 +48,7 @@ public class Main
 		p2.setFillColor(Color.WHITE);
 
 		//instantiating ball
-		float ballsize=10, ballspeed= 8.5f;
+		float ballsize=10, ballspeed= 50.0f;
 		CircleShape ball = new CircleShape(ballsize);
 		ball.setPosition((width/2)-(ballsize/2), (height/2)-(ballsize/2));
 		ball.setFillColor(Color.WHITE);
@@ -94,9 +96,30 @@ public class Main
         	ex.printStackTrace();
         }
         
-		// 
+		// ScoreBoard 
         Sound ScoreSD = new Sound();
         ScoreSD.setBuffer(soundbuffer2);
+        
+        
+        // Background Image
+        Texture Texbg1 = new Texture();
+        try
+        {
+        	Texbg1.loadFromFile(Paths.get("bin/Fire.png"));
+        }catch(IOException ex)
+        {
+        	System.out.println("Error, Could not load Fire background Image");
+        	ex.printStackTrace();
+        }
+        
+      
+        Sprite bg1 = new Sprite();
+        bg1.setTexture(Texbg1);
+        
+    
+        int ChangeBackground = 0;
+        int Fire = 50;
+
         
         // Clock 
         Clock clock = new Clock();
@@ -123,6 +146,16 @@ public class Main
 					break;
 				}
 			}
+			
+			ChangeBackground = HoldScore(p1_score, p2_score);
+			
+
+			
+			 if(ChangeBackground >= Fire)
+				window.draw(bg1);
+
+			 
+			 
 			window.draw(p1);
 			window.draw(p2);
 			window.draw(ball);
@@ -220,6 +253,7 @@ public class Main
 			p1_score++;
 			ScoreBoard(score, p1_score, p2_score);
 			ScoreSD.play();
+			HoldScore(p1_score, p2_score);
 		}
 			
 		if(left)
@@ -235,5 +269,16 @@ public class Main
 	public static void ScoreBoard(Text score, int P1_Score, int P2_Score)
 	{
 		score.setString(P1_Score + " - " + P2_Score);	
+	}
+	
+	static int HoldScore(int P1_Score, int P2_Score)
+	{
+		int Fire = 50;
+			
+		if(P1_Score >= Fire || P2_Score >= Fire)
+	       return Fire;
+		
+		return 0;
+		
 	}
 }
