@@ -10,6 +10,8 @@ import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.Text;
 import org.jsfml.graphics.TextStyle;
+import org.jsfml.system.Clock;
+import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 import org.jsfml.window.Keyboard;
 import org.jsfml.window.Keyboard.Key;
@@ -32,7 +34,7 @@ public class Main
        window.setFramerateLimit(60);
 		
 		//instantiating p1
-		int p1speed = 10;
+		int p1speed = 500;
 		RectangleShape p1 = new RectangleShape(new Vector2f(20, 100));
 		p1.setPosition(0, (height/2)-(p1.getSize().y/2));
 		p1.setFillColor(Color.WHITE);
@@ -44,7 +46,7 @@ public class Main
 		p2.setFillColor(Color.WHITE);
 
 		//instantiating ball
-		float ballsize=10, ballspeed= 2.5f;
+		float ballsize=10, ballspeed= 8.5f;
 		CircleShape ball = new CircleShape(ballsize);
 		ball.setPosition((width/2)-(ballsize/2), (height/2)-(ballsize/2));
 		ball.setFillColor(Color.WHITE);
@@ -96,13 +98,16 @@ public class Main
         Sound ScoreSD = new Sound();
         ScoreSD.setBuffer(soundbuffer2);
         
+        // Clock 
+        Clock clock = new Clock();
+        
         
 		//main loop
 		while(window.isOpen())
 		{
 			window.clear();
 			
-			
+		    Time dt = clock.restart();	
 			
 			for(Event event : window.pollEvents())
 			{
@@ -112,7 +117,7 @@ public class Main
 					window.close();
 					break;
 				case KEY_PRESSED:
-					input(p1, p2, p1speed, p2speed, GPSong);
+					input(p1, p2, p1speed, p2speed, GPSong, dt);
 					break;
 				default:
 					break;
@@ -128,21 +133,21 @@ public class Main
 	}
 
 	//controls input
-	public static void input(RectangleShape p1, RectangleShape p2, int p1speed, int p2speed, Sound Song)
+	public static void input(RectangleShape p1, RectangleShape p2, int p1speed, int p2speed, Sound Song, Time dt)
 	{
 		if(Keyboard.isKeyPressed(Key.W))
 		{
 			if(p1.getPosition().y <= 0)
 				p1.setPosition(p1.getPosition().x, 0);
 			else
-				p1.move(0, -p1speed);
+				p1.move(0, -p1speed * dt.asSeconds());
 		}
-		else if(Keyboard.isKeyPressed(Key.S))
+		if(Keyboard.isKeyPressed(Key.S))
 		{
 			if(p1.getPosition().y >= 500)
 				p1.setPosition(p1.getPosition().x, 500);
 			else
-				p1.move(0, p1speed);
+				p1.move(0, p1speed * dt.asSeconds());
 		}
 
 		if(Keyboard.isKeyPressed(Key.UP))
@@ -150,14 +155,14 @@ public class Main
 			if(p2.getPosition().y <= 0)
 				p2.setPosition(p2.getPosition().x, 0);
 			else
-				p2.move(0, -p2speed);
+				p2.move(0, -p2speed * dt.asSeconds());
 		}
-		else if(Keyboard.isKeyPressed(Key.DOWN))
+		if(Keyboard.isKeyPressed(Key.DOWN))
 		{
 			if(p2.getPosition().y >= 500)
 				p2.setPosition(p2.getPosition().x, 500);
 			else
-				p2.move(0, p2speed);
+				p2.move(0, p2speed * dt.asSeconds());
 		}
 		
 		if(Keyboard.isKeyPressed(Keyboard.Key.M))
