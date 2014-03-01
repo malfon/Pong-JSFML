@@ -36,7 +36,7 @@ public class Main
        window.setFramerateLimit(60);
 		
 		//instantiating p1
-		int p1speed = 500;
+		int p1speed = 800;
 		RectangleShape p1 = new RectangleShape(new Vector2f(20, 100));
 		p1.setPosition(0, (height/2)-(p1.getSize().y/2));
 		p1.setFillColor(Color.WHITE);
@@ -48,7 +48,7 @@ public class Main
 		p2.setFillColor(Color.WHITE);
 
 		//instantiating ball
-		float ballsize=10, ballspeed= 8.5f;
+		float ballsize=10, ballspeed= 8.50f;
 		CircleShape ball = new CircleShape(ballsize);
 		ball.setPosition((width/2)-(ballsize/2), (height/2)-(ballsize/2));
 		ball.setFillColor(Color.WHITE);
@@ -139,13 +139,15 @@ public class Main
 				case CLOSED:
 					window.close();
 					break;
-				case KEY_PRESSED:
-					input(p1, p2, p1speed, p2speed, GPSong, dt);
-					break;
+					
 				default:
 					break;
 				}
 			}
+			
+			
+			
+			input(p1, p2, p1speed, p2speed, GPSong, dt);
 			
 			ChangeBackground = HoldScore(p1_score, p2_score);
 			
@@ -170,10 +172,12 @@ public class Main
 	{
 		if(Keyboard.isKeyPressed(Key.W))
 		{
+			
+			p1.move(0, -p1speed * dt.asSeconds());
 			if(p1.getPosition().y <= 0)
 				p1.setPosition(p1.getPosition().x, 0);
-			else
-				p1.move(0, -p1speed * dt.asSeconds());
+			
+				
 		}
 		if(Keyboard.isKeyPressed(Key.S))
 		{
