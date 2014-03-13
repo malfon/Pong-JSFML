@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.nio.file.Paths;
-
 import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundBuffer;
 import org.jsfml.graphics.CircleShape;
@@ -27,16 +26,16 @@ public class Main
 	public static boolean left=true, right=false, up=true, down=false;
 	public static int width=800, height=600;
 	public static int p1_score=0, p2_score=0;
-	
+
 	//main method
 	public static void main(String args[])
 	{
 		//instantiating window
-		window.create(new VideoMode(width, height), "Ultimate Pong II");
-       window.setFramerateLimit(60);
-		
+		window.create(new VideoMode(width, height), "Ultimate Pong III");
+		window.setFramerateLimit(60);
+
 		//instantiating p1
-		int p1speed = 800;
+		int p1speed = 750;
 		RectangleShape p1 = new RectangleShape(new Vector2f(20, 100));
 		p1.setPosition(0, (height/2)-(p1.getSize().y/2));
 		p1.setFillColor(Color.WHITE);
@@ -48,11 +47,11 @@ public class Main
 		p2.setFillColor(Color.WHITE);
 
 		//instantiating ball
-		float ballsize=10, ballspeed= 8.50f;
+		float ballsize=10, ballspeed= 10f;
 		CircleShape ball = new CircleShape(ballsize);
 		ball.setPosition((width/2)-(ballsize/2), (height/2)-(ballsize/2));
 		ball.setFillColor(Color.WHITE);
-		
+
 		//instantiating score
 		Font font = new Font();
 		try
@@ -66,11 +65,11 @@ public class Main
 		score.setColor(Color.WHITE);
 		score.setStyle(TextStyle.REGULAR);
 		score.setString(p1_score + " - " + p2_score);
-		
+
 		// Sound
 		SoundBuffer soundbuffer = new SoundBuffer();
 		SoundBuffer soundbuffer2 = new SoundBuffer();
-		
+
 		// Gameplay song
 		try
 		{
@@ -80,58 +79,58 @@ public class Main
 			System.out.println("Error! Could not load music");
 			ex.printStackTrace();
 		}
-		
+
 		Sound GPSong = new Sound();
 		GPSong.setBuffer(soundbuffer);
 		GPSong.setLoop(true);
-        GPSong.play();
-        
-        try
-        {
-        	soundbuffer2.loadFromFile(Paths.get("bin/Score.flac"));
-        	
-        }catch(IOException ex)
-        {
-        	System.out.println("Error! Could not load Score.flac");
-        	ex.printStackTrace();
-        }
-        
-		// ScoreBoard 
-        Sound ScoreSD = new Sound();
-        ScoreSD.setBuffer(soundbuffer2);
-        
-        
-        // Background Image
-        Texture Texbg1 = new Texture();
-        try
-        {
-        	Texbg1.loadFromFile(Paths.get("bin/Fire.png"));
-        }catch(IOException ex)
-        {
-        	System.out.println("Error, Could not load Fire background Image");
-        	ex.printStackTrace();
-        }
-        
-      
-        Sprite bg1 = new Sprite();
-        bg1.setTexture(Texbg1);
-        
-    
-        int ChangeBackground = 0;
-        int Fire = 50;
+		GPSong.play();
 
-        
-        // Clock 
-        Clock clock = new Clock();
-        
-        
+		try
+		{
+			soundbuffer2.loadFromFile(Paths.get("bin/Score.flac"));
+
+		}catch(IOException ex)
+		{
+			System.out.println("Error! Could not load Score.flac");
+			ex.printStackTrace();
+		}
+
+		// ScoreBoard 
+		Sound ScoreSD = new Sound();
+		ScoreSD.setBuffer(soundbuffer2);
+
+
+		// Background Image
+		Texture Texbg1 = new Texture();
+		try
+		{
+			Texbg1.loadFromFile(Paths.get("bin/Fire.png"));
+		}catch(IOException ex)
+		{
+			System.out.println("Error, Could not load Fire background Image");
+			ex.printStackTrace();
+		}
+
+
+		Sprite bg1 = new Sprite();
+		bg1.setTexture(Texbg1);
+
+
+		int ChangeBackground = 0;
+		int Fire = 10;
+
+
+		// Clock 
+		Clock clock = new Clock();
+
+
 		//main loop
 		while(window.isOpen())
 		{
 			window.clear();
-			
-		    Time dt = clock.restart();	
-			
+
+			Time dt = clock.restart();	
+
 			for(Event event : window.pollEvents())
 			{
 				switch(event.type)
@@ -139,25 +138,32 @@ public class Main
 				case CLOSED:
 					window.close();
 					break;
-					
+				case KEY_PRESSED:
+					input(p1, p2, ball, p1speed, p2speed, GPSong, dt);
+					break;
 				default:
 					break;
 				}
 			}
-			
-			
-			
-			input(p1, p2, p1speed, p2speed, GPSong, dt);
-			
-			ChangeBackground = HoldScore(p1_score, p2_score);
-			
 
-			
-			 if(ChangeBackground >= Fire)
+			ChangeBackground = HoldScore(p1_score, p2_score);
+
+
+
+			if(ChangeBackground >= Fire)
 				window.draw(bg1);
 
-			 
-			 
+			if(ball.getPosition().x <= width/5)
+			{
+				p1.setPosition(p1.getPosition().x, ball.getPosition().y-(p1.getSize().y/2));
+			}
+			
+			if(ball.getPosition().x >= width*4/5)
+			{
+				p2.setPosition(p2.getPosition().x, ball.getPosition().y-(p2.getSize().y/2));
+			}
+
+
 			window.draw(p1);
 			window.draw(p2);
 			window.draw(ball);
@@ -168,16 +174,14 @@ public class Main
 	}
 
 	//controls input
-	public static void input(RectangleShape p1, RectangleShape p2, int p1speed, int p2speed, Sound Song, Time dt)
+	public static void input(RectangleShape p1, RectangleShape p2, CircleShape ball, int p1speed, int p2speed, Sound Song, Time dt)
 	{
-		if(Keyboard.isKeyPressed(Key.W))
+		/*if(Keyboard.isKeyPressed(Key.W))
 		{
-			
-			p1.move(0, -p1speed * dt.asSeconds());
 			if(p1.getPosition().y <= 0)
 				p1.setPosition(p1.getPosition().x, 0);
-			
-				
+			else
+				p1.move(0, -p1speed * dt.asSeconds());
 		}
 		if(Keyboard.isKeyPressed(Key.S))
 		{
@@ -185,9 +189,9 @@ public class Main
 				p1.setPosition(p1.getPosition().x, 500);
 			else
 				p1.move(0, p1speed * dt.asSeconds());
-		}
+		}*/
 
-		if(Keyboard.isKeyPressed(Key.UP))
+		/*	if(Keyboard.isKeyPressed(Key.UP))
 		{
 			if(p2.getPosition().y <= 0)
 				p2.setPosition(p2.getPosition().x, 0);
@@ -200,13 +204,13 @@ public class Main
 				p2.setPosition(p2.getPosition().x, 500);
 			else
 				p2.move(0, p2speed * dt.asSeconds());
-		}
-		
+		}*/
+
 		if(Keyboard.isKeyPressed(Keyboard.Key.M))
 			Song.stop();
 		if(Keyboard.isKeyPressed(Keyboard.Key.P))
 			Song.play();
-		
+
 	}
 
 	//ball updater
@@ -219,7 +223,7 @@ public class Main
 			left=false;
 			ball.setPosition(p1.getSize().x, ball.getPosition().y);
 		}
-		
+
 		//collision with p2
 		if(ball.getPosition().x >= p2.getPosition().x-ball.getRadius()*2/2 && ball.getPosition().y >= p2.getPosition().y && ball.getPosition().y <= p2.getPosition().y+p2.getSize().y)
 		{
@@ -227,7 +231,7 @@ public class Main
 			right=false;
 			ball.setPosition(width-p2.getSize().x-ball.getRadius()*2, ball.getPosition().y);
 		}
-		
+
 		//collision with ceiling and floor
 		if(ball.getPosition().y <= 0 && up)
 		{
@@ -241,15 +245,15 @@ public class Main
 			down=false;
 			ball.move(0, -ballspeed);
 		}
-		
+
 		//reset
 		if(ball.getPosition().x <= -ball.getRadius()*2)
 		{
-			ball.setPosition((width/2)-(ball.getRadius()*2/2), (height/2)-(ball.getRadius()*2/2));
+			ball.setPosition((width*2/3)-(ball.getRadius()*2/2), (height/2)-(ball.getRadius()*2/2));
 			p2_score++;
 			ScoreBoard(score, p1_score, p2_score);
 			ScoreSD.play();
-			
+
 		}
 		else if(ball.getPosition().x >= width)
 		{
@@ -259,30 +263,30 @@ public class Main
 			ScoreSD.play();
 			HoldScore(p1_score, p2_score);
 		}
-			
+
 		if(left)
-			ball.move(-ballspeed, 0);
+			ball.move(-0.5f*ballspeed, 0);
 		else if(right)
-			ball.move(ballspeed, 0);
+			ball.move(0.5f*ballspeed, 0);
 		if(up)
 			ball.move(0, -ballspeed);
 		else if(down)
 			ball.move(0, ballspeed);
 	}
-	
+
 	public static void ScoreBoard(Text score, int P1_Score, int P2_Score)
 	{
 		score.setString(P1_Score + " - " + P2_Score);	
 	}
-	
+
 	static int HoldScore(int P1_Score, int P2_Score)
 	{
 		int Fire = 50;
-			
+
 		if(P1_Score >= Fire || P2_Score >= Fire)
-	       return Fire;
-		
+			return Fire;
+
 		return 0;
-		
+
 	}
 }
